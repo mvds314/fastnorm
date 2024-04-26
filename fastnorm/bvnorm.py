@@ -31,7 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import numpy as np
-import math
 import scipy.stats as sps
 
 from .util import type_wrapper
@@ -45,17 +44,19 @@ def bivar_norm_pdf(x, rho):
     .. math::
         f([x_0,x_1],\rho)=\frac{e^{-\frac{x_0^2+x_1^2-2\rho x_0 x_1}{2(1-\rho ^2)}}}{2 \pi  \sqrt{1-\rho ^2}}
     """
-    if len(x) != 2:
-        raise Exception("Length of x is assumed to be 2")
+    if x.shape[-1] != 2:
+        raise ValueError("x is assumed to be an arraow with 2 dimensional vectors")
     if np.abs(rho) >= 1:
-        raise Exception("rho should be between -1 and 1")
+        raise ValueError("rho should be between -1 and 1")
     if np.any(np.isinf(x)):
         return 0
     else:
         return (
             1
-            / (2 * math.pi * math.sqrt(1 - rho**2))
-            * math.exp(-1 * (x[0] ** 2 + x[1] ** 2 - 2 * rho * x[0] * x[1]) / 2 / (1 - rho**2))
+            / (2 * np.pi * np.sqrt(1 - rho**2))
+            * np.exp(
+                -1 * (x.T[0] ** 2 + x.T[1] ** 2 - 2 * rho * x.T[0] * x.T[1]) / 2 / (1 - rho**2)
+            )
         )
 
 
@@ -161,7 +162,7 @@ def bvnu(a, b, rho=0):
     elif rho == 0:
         p = sps.norm.cdf(-a) * sps.norm.cdf(-b)
     else:
-        tp = 2 * math.pi
+        tp = 2 * np.pi
         h = a
         k = b
         hk = h * k
@@ -177,7 +178,7 @@ def bvnu(a, b, rho=0):
             x = _x_bvnu_3
         if abs(rho) < 0.925:
             hs = (h * h + k * k) / 2
-            asr = math.asin(rho) / 2
+            asr = np.asin(rho) / 2
             sn = np.sin(asr * x)
             bvn = np.dot(np.exp((sn * hk - hs) / (1 - sn**2)), w)
             bvn = bvn * asr / tp + sps.norm.cdf(-h) * sps.norm.cdf(-k)
@@ -187,21 +188,19 @@ def bvnu(a, b, rho=0):
                 hk = -hk
             if abs(rho) < 1:
                 ass = 1 - rho**2
-                a = math.sqrt(ass)
+                a = np.sqrt(ass)
                 bs = (h - k) ** 2
                 asr = -(bs / ass + hk) / 2
                 c = (4 - hk) / 8
                 d = (12 - hk) / 80
                 if asr > -100:
                     bvn = (
-                        a
-                        * math.exp(asr)
-                        * (1 - c * (bs - ass) * (1 - d * bs) / 3 + c * d * ass**2)
+                        a * np.exp(asr) * (1 - c * (bs - ass) * (1 - d * bs) / 3 + c * d * ass**2)
                     )
                 if hk > -100:
-                    b = math.sqrt(bs)
-                    spp = math.sqrt(tp) * sps.norm.cdf(-b / a)
-                    bvn = bvn - math.exp(-hk / 2) * spp * b * (1 - c * bs * (1 - d * bs) / 3)
+                    b = np.sqrt(bs)
+                    spp = np.sqrt(tp) * sps.norm.cdf(-b / a)
+                    bvn = bvn - np.exp(-hk / 2) * spp * b * (1 - c * bs * (1 - d * bs) / 3)
                 a = a / 2
                 xs = (a * x) ** 2
                 asr = -(bs / xs + hk) / 2
