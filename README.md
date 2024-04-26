@@ -3,13 +3,15 @@
 This package provides a fast way to evaluate the pdf and cdf of the multivariate normal distribution.
 Currently, it only contains code for the bivariate normal distribution.
 
-The default implementation in scipy can be slow. The implementation in this package is based on the following references:
+The implementation in this package is based on the following references:
 
 1. Drezner, Zvi, and George O. Wesolowsky. "On the computation of the bivariate normal integral." Journal of Statistical Computation and Simulation 35.1-2 (1990): 101-107.
 2. Genz, Alan, and Frank Bretz. "Computation of multivariate normal and t probabilities." Lecture Notes in Statistics 195 (2009)
 
 Put simply, the method comes to an interpolation specifically tailored to the multivariate normal distribution.
 Although it is an approximation, the method is near to exact and very fast.
+
+The implementation in scipy used to be slow, but now seems comparable in speed to this package.
 
 ## Related software
 
@@ -19,7 +21,10 @@ Although it is an approximation, the method is near to exact and very fast.
 ## Basic example
 
 ```python
-import numpy as np
+import fastnorm as fn
+correl = 0.5
+fn.bivar_norm_cdf(1, 1, correl)
+fn.bivar_norm_pdf(1, 1, correl)
 ```
 
 ## Installation
