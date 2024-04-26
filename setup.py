@@ -9,5 +9,5 @@ setup(
     license="BSD",
     keywords="statistics",
     packages=["fastnorm"],
-    install_requires=["numpy", "scipy"],
+    install_requires=["numpy", "scipy", "statsmodels"],
 )
