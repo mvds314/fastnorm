@@ -1,0 +1,10 @@
+The license of fastnorm can be found in the LICENSE file
+
+The fastnorm repository and source distributions bundle a number of libraries that
+are compatibly licensed.  We list these here.
+
+
+Name: tvn
+Files: fastnorm/bvn.py
+License: 3-clause BSD
+  For details, see the header inside fastnorm/bvn.py
