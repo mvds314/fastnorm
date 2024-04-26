@@ -1,0 +1,9 @@
+cff-version: 24.04
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "van der Schans"
+  given-names: "Martin"
+title: "Fastnorm: a Python library for fast evaluation of the multivariate normal distribution"
+version: 23.10
+date-released: 2024-04-26
+url: "https://github.com/mvds314/fastnorm"
