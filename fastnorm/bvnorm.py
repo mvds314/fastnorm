@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import numpy as np
+import math
 import scipy.stats as sps
 
 from .util import type_wrapper
@@ -53,7 +54,7 @@ def bivar_norm_pdf(x, rho):
     else:
         return (
             1
-            / (2 * np.pi * np.sqrt(1 - rho**2))
+            / (2 * math.pi * math.sqrt(1 - rho**2))
             * np.exp(
                 -1 * (x.T[0] ** 2 + x.T[1] ** 2 - 2 * rho * x.T[0] * x.T[1]) / 2 / (1 - rho**2)
             )
@@ -61,7 +62,7 @@ def bivar_norm_pdf(x, rho):
 
 
 @type_wrapper(xloc=0)
-def bivar_norm_cdf(a, b, rho=0):
+def bivar_norm_cdf(x, rho=0):
     r"""
     Evaluate bivariate cummulative standard normal distribution function
 
@@ -73,7 +74,12 @@ def bivar_norm_cdf(a, b, rho=0):
     This function is based on the method described by
     Drezner, Z and G.O. Wesolowsky, (1989), On the computation of the bivariate normal inegral, Journal of Statist. Comput. Simul. 35, pp. 101-107.
     """
-    return bvnl(a, b, rho)
+    if x.ndim == 1:
+        return bvnl(x[0], x[1], rho)
+    elif x.ndim == 2:
+        return np.array([bvnl(xx[0], xx[1], rho) for xx in x])
+    else:
+        raise ValueError("x should be 1 or 2 dimensional array")
 
 
 _w_bvnu_1 = np.array([0.1713244923791705, 0.3607615730481384, 0.4679139345726904])
@@ -162,7 +168,7 @@ def bvnu(a, b, rho=0):
     elif rho == 0:
         p = sps.norm.cdf(-a) * sps.norm.cdf(-b)
     else:
-        tp = 2 * np.pi
+        tp = 2 * math.pi
         h = a
         k = b
         hk = h * k
@@ -178,7 +184,7 @@ def bvnu(a, b, rho=0):
             x = _x_bvnu_3
         if abs(rho) < 0.925:
             hs = (h * h + k * k) / 2
-            asr = np.asin(rho) / 2
+            asr = math.asin(rho) / 2
             sn = np.sin(asr * x)
             bvn = np.dot(np.exp((sn * hk - hs) / (1 - sn**2)), w)
             bvn = bvn * asr / tp + sps.norm.cdf(-h) * sps.norm.cdf(-k)
@@ -188,7 +194,7 @@ def bvnu(a, b, rho=0):
                 hk = -hk
             if abs(rho) < 1:
                 ass = 1 - rho**2
-                a = np.sqrt(ass)
+                a = math.sqrt(ass)
                 bs = (h - k) ** 2
                 asr = -(bs / ass + hk) / 2
                 c = (4 - hk) / 8
@@ -198,8 +204,8 @@ def bvnu(a, b, rho=0):
                         a * np.exp(asr) * (1 - c * (bs - ass) * (1 - d * bs) / 3 + c * d * ass**2)
                     )
                 if hk > -100:
-                    b = np.sqrt(bs)
-                    spp = np.sqrt(tp) * sps.norm.cdf(-b / a)
+                    b = math.sqrt(bs)
+                    spp = math.sqrt(tp) * sps.norm.cdf(-b / a)
                     bvn = bvn - np.exp(-hk / 2) * spp * b * (1 - c * bs * (1 - d * bs) / 3)
                 a = a / 2
                 xs = (a * x) ** 2
@@ -233,4 +239,6 @@ def bvnl(a, b, rho=0):
 
     with correlation coefficient :math:`\rho`.
     """
+    a = np.asanyarray(a)
+    b = np.asanyarray(b)
     return bvnu(-a, -b, rho)
