@@ -34,7 +34,10 @@ import numpy as np
 import math
 import scipy.stats as sps
 
+from .util import type_wrapper
 
+
+@type_wrapper(xloc=0)
 def bivar_norm_pdf(x, rho):
     r"""
     Evaluate the bivariate (standard) normal distribution function with correlation :math:`\rho`
@@ -56,6 +59,7 @@ def bivar_norm_pdf(x, rho):
         )
 
 
+@type_wrapper(xloc=0)
 def bivar_norm_cdf(a, b, rho=0):
     r"""
     Evaluate bivariate cummulative standard normal distribution function
@@ -66,13 +70,11 @@ def bivar_norm_cdf(a, b, rho=0):
     with correlation coefficient :math:`\rho`.
 
     This function is based on the method described by
-    Drezner, Z and G.O. Wesolowsky, (1989), On the computation of the bivariate normal inegral, Journal of Statist. Comput. Simul. 35, pp. 101-107,
-    with major modifications for double precision, for :math:`|r|` close to :math:`1`, and for matlab by Alan Genz - last modifications 7/98.
+    Drezner, Z and G.O. Wesolowsky, (1989), On the computation of the bivariate normal inegral, Journal of Statist. Comput. Simul. 35, pp. 101-107.
     """
     return bvnl(a, b, rho)
 
 
-# declaring thus stuff as global variables is faster
 _w_bvnu_1 = np.array([0.1713244923791705, 0.3607615730481384, 0.4679139345726904])
 _x_bvnu_1 = np.array([0.9324695142031522, 0.6612093864662647, 0.2386191860831970])
 _w_bvnu_2 = np.array(
@@ -140,11 +142,11 @@ def bvnu(a, b, rho=0):
 
     with correlation coefficient :math:`\rho`.
 
-    This function is based on the method described in [1]_
+    This function is based on the method described in [1].
 
     References
     ----------
-    .. [1] Drezner, Z and G.O. Wesolowsky, (1989), On the computation of the bivariate normal inegral, Journal of Statist. Comput. Simul. 35, pp. 101-107, with major modifications for double precision, for :math:`|r|` close to :math:`1`, and for matlab by Alan Genz - last modifications 7/98.
+    .. [1] Drezner, Z and G.O. Wesolowsky, (1989), On the computation of the bivariate normal inegral, Journal of Statist. Comput. Simul. 35, pp. 101-107.
     """
     global _w_bvnu_1, _x_bvnu_1, _w_bvnu_2, _x_bvnu_2, _w_bvnu_3, _x_bvnu_3
     if np.isposinf(a) or np.isposinf(b):
@@ -230,10 +232,6 @@ def bvnl(a, b, rho=0):
     .. math::
         \int_{-\infty}^{a} \int_{\infty}^{b} \phi(x,y,\rho) dxdy
 
-    with correlation coefficient :math:`\rho` as describedin [1].
-
-    References
-    ----------
-    .. [1] Drezner, Z and G.O. Wesolowsky, (1989), On the computation of the bivariate normal inegral, Journal of Statist. Comput. Simul. 35, pp. 101-107, with major modifications for double precision, for :math:`|r|` close to :math:`1`, and for matlab by Alan Genz - last modifications 7/98.
+    with correlation coefficient :math:`\rho`.
     """
     return bvnu(-a, -b, rho)
