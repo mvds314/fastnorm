@@ -12,7 +12,8 @@ Although it is an approximation, the method is near to exact and fast.
 The implementation in Scipy is based on the same methodology, see [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/mvndst.f) and [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/_qmvnt.py.
 
 With scalar input, the speed is comparable to the Scipy implementation.
-The Scipy implemantation, however, is slow for vector valued input. This packages containes a vectorized implementation of which the speed becomes of the same order of magnitude as a C implementation, e.g., the one in the [approxcdf](https://github.com/david-cortes/approxcdf) package.
+The Scipy implemantation, however, is slow for vector valued input. This packages containes a vectorized implementation which is signficantly faster albeit still slower than a native C implementation such as the one in the [approxcdf](https://github.com/david-cortes/approxcdf) package.
+The advantage of this package is that it is pure Python and does not require any (build) dependencies.
 
 ## Basic example
 
