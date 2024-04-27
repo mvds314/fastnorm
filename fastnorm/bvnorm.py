@@ -324,14 +324,14 @@ def bvnu_vectorized(a, b, rho=0):
                 bvn = (a * np.dot(np.exp(asr) * (spp - ep), w) - bvn) / tp
             if rho > 0:
                 bvn = bvn + sps.norm.cdf(-np.max([h, k], axis=0))
-            elif h >= k:
-                bvn = -bvn
             else:
-                if h < 0:
-                    L = sps.norm.cdf(k) - sps.norm.cdf(h)
-                else:
-                    L = sps.norm.cdf(-h) - sps.norm.cdf(-k)
-                bvn = L - bvn
+                cond = h >= k
+                bvn = np.where(cond, -bvn, bvn)
+                cond = ~cond & (h < 0)
+                L = np.where(
+                    cond, sps.norm.cdf(k) - sps.norm.cdf(h), sps.norm.cdf(-h) - sps.norm.cdf(-k)
+                )
+                bvn = np.where(cond, L - bvn, bvn)
         p[sel] = np.clip(bvn, 0, 1)
     return p
 
