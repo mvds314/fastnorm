@@ -59,3 +59,9 @@ pip install -e .
 to install the package in edit mode.
 
 Run unittests with `pytest`.
+
+## Roadmap
+
+- Add support for the trivariate and quadrivariate normal distribution.
+- Add support for the higher dimensional normal distribution.
+- Maybe extend to the multivariate t-distribution.
