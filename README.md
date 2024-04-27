@@ -1,16 +1,15 @@
 # Fast evaluation of multivariate normal distributions
 
-This package provides a fast way to evaluate the pdf and cdf of the multivariate normal distribution.
-Currently, it only contains code for the bivariate normal distribution.
+This package provides a fast way to evaluate the pdf and cdf of a standardized multivariate normal distribution. Currently, it only contains code for the bivariate normal distribution.
 
 The implementation in this package is based on the following references:
 
 1. Drezner, Zvi, and George O. Wesolowsky. "On the computation of the bivariate normal integral." Journal of Statistical Computation and Simulation 35.1-2 (1990): 101-107.
 2. Genz, Alan, and Frank Bretz. "Computation of multivariate normal and t probabilities." Lecture Notes in Statistics 195 (2009)
 
-Put simply, the method comes to an interpolation specifically tailored to the multivariate normal distribution.
-Although it is an approximation, the method is near to exact and very fast.
-The implementation in Scipy seems to be based on the same methodology (see [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/mvndst.f) and [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/_qmvnt.py).
+Simply put, the method comes down to an interpolation specifically tailored to the multivariate normal distribution.
+Although it is an approximation, the method is near to exact and fast.
+The implementation in Scipy is based on the same methodology, see [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/mvndst.f) and [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/_qmvnt.py.
 
 With scalar input, the speed is comparable to the Scipy implementation.
 The Scipy implemantation, however, is slow for vector valued input. This packages containes a vectorized implementation of which the speed becomes of the same order of magnitude as a C implementation, e.g., the one in the [approxcdf](http://www.math.wsu.edu/faculty/genz/software/software.html) package.
@@ -25,8 +24,14 @@ The Scipy implemantation, however, is slow for vector valued input. This package
 ```python
 import fastnorm as fn
 correl = 0.5
-fn.bivar_norm_cdf(1, 1, correl)
-fn.bivar_norm_pdf(1, 1, correl)
+
+x=[1,1]
+fn.bivar_norm_pdf(x, correl)
+fn.bivar_norm_cdf(x, correl)
+
+x=[[1,1],[2,2]]
+fn.bivar_norm_pdf(x, correl)
+fn.bivar_norm_cdf(x, correl)
 ```
 
 ## Installation
