@@ -11,8 +11,7 @@ The implementation in this package is based on the following references:
 Put simply, the method comes to an interpolation specifically tailored to the multivariate normal distribution.
 Although it is an approximation, the method is near to exact and very fast.
 
-The implementation in scipy used to be slow, but, currently, seems to be based on the same [methodology](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/_qmvnt.py)
-The scipy implementation is comparable in speed to this package.
+The implementation in scipy used to be slow, but, currently, seems to be based on the same (see [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/mvndst.f) and [here](https://github.com/scipy/scipy/blob/v1.13.0/scipy/stats/_qmvnt.py). The scipy implementation is comparable in speed to this package.
 
 ## Related software
 
