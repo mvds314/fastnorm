@@ -14,11 +14,6 @@ The implementation in Scipy is based on the same methodology, see [here](https:/
 With scalar input, the speed is comparable to the Scipy implementation.
 The Scipy implemantation, however, is slow for vector valued input. This packages containes a vectorized implementation of which the speed becomes of the same order of magnitude as a C implementation, e.g., the one in the [approxcdf](https://github.com/david-cortes/approxcdf) package.
 
-## Related software
-
-- [approxcdf](https://github.com/david-cortes/approxcdf)
-- [Matlab implementations](https://www.math.wsu.edu/faculty/genz/software/software.html)
-
 ## Basic example
 
 ```python
@@ -65,3 +60,8 @@ Run unittests with `pytest`.
 - Add support for the trivariate and quadrivariate normal distribution.
 - Add support for the higher dimensional normal distribution.
 - Maybe extend to the multivariate t-distribution.
+
+## Related software
+
+- [approxcdf](https://github.com/david-cortes/approxcdf)
+- [Matlab implementations](https://www.math.wsu.edu/faculty/genz/software/software.html)
