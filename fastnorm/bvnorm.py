@@ -74,13 +74,8 @@ def bivar_norm_cdf(x, rho=0):
     This function is based on the method described by
     Drezner, Z and G.O. Wesolowsky, (1989), On the computation of the bivariate normal inegral, Journal of Statist. Comput. Simul. 35, pp. 101-107.
     """
+    assert x.ndim == 1 or x.ndim == 2, "x should be 1 or 2 dimensional array"
     return bvnl(x.T[0], x.T[1], rho)
-    if x.ndim == 1:
-        return bvnl(x[0], x[1], rho)
-    elif x.ndim == 2:
-        return np.array([bvnl(xx[0], xx[1], rho) for xx in x])
-    else:
-        raise ValueError("x should be 1 or 2 dimensional array")
 
 
 _w_bvnu_1 = np.array([0.1713244923791705, 0.3607615730481384, 0.4679139345726904])
@@ -320,8 +315,6 @@ def bvnu_vectorized(a, b, rho=0):
                 a = a / 2
                 xs = (a * x) ** 2
                 asr = -(np.outer(bs, 1 / xs) + np.expand_dims(hk, 1)) / 2
-                ix = asr > -100
-                # TODO: this is the difficult part
                 xs = np.where(asr > -100, xs, 0)
                 spp = 1 + np.multiply(xs, np.expand_dims(c, axis=1)) * (
                     1 + 5 * np.multiply(xs, np.expand_dims(d, axis=1))
