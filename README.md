@@ -23,7 +23,7 @@ Rough findings for speed improvements compared to the Scipy implementation (valu
 | approxcdf | abs < 0.925 | >1000 | 10 |
 | Scipy | abs > 0.925 | 1 | 1 |
 | fastnorm | abs > 0.925 | >1000| 3 |
-| fastnorm | abs > 0.925 | >1000| 10 |
+| approxcdf | abs > 0.925 | >1000| 10 |
 
 These finds are based on an average of 100 runs and can be reproduced by running the `example.py` script.
 
