@@ -31,8 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import numpy as np
-import math
-import scipy.stats as sps
 
 from .util import type_wrapper
 
@@ -54,7 +52,7 @@ def bivar_norm_pdf(x, rho):
     else:
         return (
             1
-            / (2 * math.pi * math.sqrt(1 - rho**2))
+            / (2 * np.pi * np.sqrt(1 - rho**2))
             * np.exp(
                 -1 * (x.T[0] ** 2 + x.T[1] ** 2 - 2 * rho * x.T[0] * x.T[1]) / 2 / (1 - rho**2)
             )
@@ -158,13 +156,13 @@ def bvnu(a, b, rho=0):
         if np.isneginf(b):
             p = 1
         else:
-            p = sps.norm.cdf(-b)
+            p = normcdf(-b)
     elif np.isneginf(b):
-        p = sps.norm.cdf(-a)
+        p = normcdf(-a)
     elif rho == 0:
-        p = sps.norm.cdf(-a) * sps.norm.cdf(-b)
+        p = normcdf(-a) * normcdf(-b)
     else:
-        tp = 2 * math.pi
+        tp = 2 * np.pi
         h = a
         k = b
         hk = h * k
@@ -180,17 +178,17 @@ def bvnu(a, b, rho=0):
             x = _x_bvnu_3
         if abs(rho) < 0.925:
             hs = (h * h + k * k) / 2
-            asr = math.asin(rho) / 2
+            asr = np.arcsin(rho) / 2
             sn = np.sin(asr * x)
             bvn = np.dot(np.exp((sn * hk - hs) / (1 - sn**2)), w)
-            bvn = bvn * asr / tp + sps.norm.cdf(-h) * sps.norm.cdf(-k)
+            bvn = bvn * asr / tp + normcdf(-h) * normcdf(-k)
         else:
             if rho < 0:
                 k = -k
                 hk = -hk
             if abs(rho) < 1:
                 ass = 1 - rho**2
-                a = math.sqrt(ass)
+                a = np.sqrt(ass)
                 bs = (h - k) ** 2
                 asr = -(bs / ass + hk) / 2
                 c = (4 - hk) / 8
@@ -200,8 +198,8 @@ def bvnu(a, b, rho=0):
                         a * np.exp(asr) * (1 - c * (bs - ass) * (1 - d * bs) / 3 + c * d * ass**2)
                     )
                 if hk > -100:
-                    b = math.sqrt(bs)
-                    spp = math.sqrt(tp) * sps.norm.cdf(-b / a)
+                    b = np.sqrt(bs)
+                    spp = np.sqrt(tp) * normcdf(-b / a)
                     bvn = bvn - np.exp(-hk / 2) * spp * b * (1 - c * bs * (1 - d * bs) / 3)
                 a = a / 2
                 xs = (a * x) ** 2
@@ -213,17 +211,52 @@ def bvnu(a, b, rho=0):
                 ep = np.exp(-(hk / 2) * xs / (1 + rs) ** 2) / rs
                 bvn = (a * np.dot(np.exp(asr[ix]) * (spp - ep), w[ix]) - bvn) / tp
             if rho > 0:
-                bvn = bvn + sps.norm.cdf(-max(h, k))
+                bvn = bvn + normcdf(-max(h, k))
             elif h >= k:
                 bvn = -bvn
             else:
                 if h < 0:
-                    L = sps.norm.cdf(k) - sps.norm.cdf(h)
+                    L = normcdf(k) - normcdf(h)
                 else:
-                    L = sps.norm.cdf(-h) - sps.norm.cdf(-k)
+                    L = normcdf(-h) - normcdf(-k)
                 bvn = L - bvn
         p = max(0, min(1, bvn))
     return p
+
+
+def erf(x):
+    """
+    From the Handbook of Mathematical Functions, formula 7.1.26.
+    """
+    # save the sign of x
+    sign = np.sign(x)
+    x = np.abs(x)
+
+    # constants
+    a1 = 0.254829592
+    a2 = -0.284496736
+    a3 = 1.421413741
+    a4 = -1.453152027
+    a5 = 1.061405429
+    p = 0.3275911
+
+    # A&S formula 7.1.26
+    t = 1.0 / (1.0 + p * x)
+    y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * np.exp(-np.square(x))
+    return sign * y  # erf(-x) = -erf(x)
+
+
+def erfc(x):
+    return 1 - erf(x)
+
+
+def normcdf(x):
+    """
+    Standard normal cumulative distribution function
+
+    Seems to be slightly faster than scipy.stats.norm.cdf
+    """
+    return 0.5 * erfc(-x / np.sqrt(2))
 
 
 def bvnu_vectorized(a, b, rho=0):
@@ -248,7 +281,7 @@ def bvnu_vectorized(a, b, rho=0):
     assert len(a) == len(b)
     # If uncorrelated, return the product of the marginals
     if rho == 0:
-        return sps.norm.cdf(-a) * sps.norm.cdf(-b)
+        return normcdf(-a) * normcdf(-b)
     # If a or b is infinite set appropriate values
     p = np.full(len(a), np.nan)
     neginf_a = np.isneginf(a)
@@ -258,9 +291,9 @@ def bvnu_vectorized(a, b, rho=0):
     p[posinf_a | posinf_b] = 0
     p[neginf_a & neginf_b] = 1
     if np.any(neginf_a & ~neginf_b):
-        p[neginf_a & ~neginf_b] = sps.norm.cdf(-b[neginf_a & ~neginf_b])
+        p[neginf_a & ~neginf_b] = normcdf(-b[neginf_a & ~neginf_b])
     if np.any(~neginf_a & neginf_b):
-        p[~neginf_a & neginf_b] = sps.norm.cdf(-a[~neginf_a & neginf_b])
+        p[~neginf_a & neginf_b] = normcdf(-a[~neginf_a & neginf_b])
     # Handle the rest
     sel = ~(neginf_a | neginf_b | posinf_a | posinf_b)
     if np.any(sel):
@@ -268,7 +301,6 @@ def bvnu_vectorized(a, b, rho=0):
         k = b[sel]
         tp = 2 * np.pi
         hk = h * k
-        bvn = np.zeros(len(h))
         if abs(rho) < 0.3:  # Gauss Legendre points and weights, n =  6
             w = _w_bvnu_1
             x = _x_bvnu_1
@@ -279,59 +311,53 @@ def bvnu_vectorized(a, b, rho=0):
             w = _w_bvnu_3
             x = _x_bvnu_3
         if abs(rho) < 0.925:
-            hs = np.expand_dims((h * h + k * k) / 2, axis=1)
-            asr = math.asin(rho) / 2
+            hs = (np.square(h) + np.square(k)) / 2
+            asr = np.arcsin(rho) / 2
             sn = np.sin(asr * x)
-            bvn = np.add(np.outer(hk, sn), -hs)
-            bvn = np.divide(bvn, np.expand_dims(1 - sn**2, axis=0))
-            bvn = np.dot(np.exp(bvn), w)
-            bvn = bvn * asr / tp + sps.norm.cdf(-h) * sps.norm.cdf(-k)
+            bvn = (np.outer(hk, sn) - hs.reshape((-1, 1))) / (1 - np.square(sn))
+            bvn = np.dot(np.exp(bvn), w) * asr / tp + normcdf(-h) * normcdf(-k)
         else:
             if rho < 0:
                 k = -k
                 hk = -hk
             if abs(rho) < 1:
                 ass = 1 - rho**2
-                a = math.sqrt(ass)
+                a = np.sqrt(ass)
                 bs = np.square(h - k)
                 asr = -(bs / ass + hk) / 2
                 c = (4 - hk) / 8
                 d = (12 - hk) / 80
-                # TODO: continue here with cases -> set up bvn
-                cond = asr > -100
-                if np.any(cond):
-                    bvn = np.where(
-                        cond,
-                        a
-                        * np.exp(asr)
-                        * (1 - c * (bs - ass) * (1 - d * bs) / 3 + c * d * np.square(ass)),
-                        bvn,
-                    )
-                cond = hk > -100
-                if np.any(cond):
-                    b = np.sqrt(bs)
-                    spp = math.sqrt(tp) * sps.norm.cdf(-b / a)
-                    bvn = bvn - np.exp(-hk / 2) * spp * b * (1 - c * bs * (1 - d * bs) / 3)
-                a = a / 2
-                xs = (a * x) ** 2
-                asr = -(np.outer(bs, 1 / xs) + np.expand_dims(hk, 1)) / 2
-                xs = np.where(asr > -100, xs, 0)
-                spp = 1 + np.multiply(xs, np.expand_dims(c, axis=1)) * (
-                    1 + 5 * np.multiply(xs, np.expand_dims(d, axis=1))
+                bvn = np.where(
+                    asr > -100,
+                    a
+                    * np.exp(asr)
+                    * (1 - c * (bs - ass) * (1 - d * bs) / 3 + c * d * np.square(ass)),
+                    0,
                 )
+                cond = hk > -100
+                if cond.any():
+                    b = np.sqrt(bs)[cond]
+                    spp = np.sqrt(tp) * normcdf(-b / a)
+                    bvn[cond] += -np.exp(-hk[cond] / 2) * spp * b * (1 - c * bs * (1 - d * bs) / 3)
+                a = a / 2
+                xs = np.square(a * x)
+                asr = -(np.outer(bs, 1 / xs) + hk.reshape((-1, 1))) / 2
+                xs = np.where(asr > -100, xs, 0)
+                spp = 1 + xs * c.reshape((-1, 1)) * (1 + 5 * xs * d.reshape((-1, 1)))
                 rs = np.sqrt(1 - xs)
-                ep = np.exp(-np.expand_dims(hk / 2, axis=1) * xs / np.square(1 + rs)) / rs
+                ep = np.exp(-hk.reshape((-1, 1)) * xs / np.square(1 + rs)) / rs
                 bvn = (a * np.dot(np.exp(asr) * (spp - ep), w) - bvn) / tp
             if rho > 0:
-                bvn = bvn + sps.norm.cdf(-np.max([h, k], axis=0))
+                bvn = bvn + normcdf(-np.maximum(h, k))
             else:
                 cond = h >= k
                 bvn = np.where(cond, -bvn, bvn)
-                cond = ~cond & (h < 0)
-                L = np.where(
-                    cond, sps.norm.cdf(k) - sps.norm.cdf(h), sps.norm.cdf(-h) - sps.norm.cdf(-k)
-                )
-                bvn = np.where(cond, L - bvn, bvn)
+                cond1 = ~cond & (h < 0)
+                if cond1.any():
+                    bvn[cond1] = normcdf(k[cond1]) - normcdf(h[cond1]) - bvn
+                cond2 = ~cond & (h >= 0)
+                if cond2.any():
+                    bvn[cond2] = normcdf(-h[cond2]) - normcdf(-k[cond2]) - bvn
         p[sel] = np.clip(bvn, 0, 1)
     return p
 
@@ -347,7 +373,9 @@ def bvnl(a, b, rho=0):
     """
     a = np.asanyarray(a)
     b = np.asanyarray(b)
-    if a.ndim == 0:
+    if a.ndim == 0 and b.ndim == 0:
         return bvnu(-a, -b, rho)
-    else:
+    elif a.ndim == b.ndim == 1:
         return bvnu_vectorized(-a, -b, rho)
+    else:
+        raise ValueError("Bounds must be scalars or vectors")

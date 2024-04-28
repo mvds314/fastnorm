@@ -56,8 +56,8 @@ if __name__ == "__main__":
         pytest.main(
             [
                 str(Path(__file__)),
-                "-k",
-                "test_bivar_norm_cdf",
+                # "-k",
+                # "test_bivar_norm_cdf",
                 "--tb=auto",
                 "--pdb",
             ]
