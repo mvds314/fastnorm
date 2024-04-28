@@ -19,7 +19,7 @@ Rough findings for speed improvements compared to the Scipy implementation.
 | Module | Correlation | Speed improvement single | Speed improvement vectorized
 | --- | --- | --- | --- |
 | fastnorm | abs < 0.925 | >1000 x faster than Scipy | 10 x faster than Scipy|
-| approxcdf | abs < 0.925 | >1000 x faster than Scipy| 10 |
+| approxcdf | abs < 0.925 | >1000 x faster than Scipy| 10 x faster than Scipy|
 | fastnorm | abs > 0.925 | >1000 x faster than Scipy| 3 x faster than Scipy|
 | approxcdf | abs > 0.925 | >1000 x faster than Scipy| 10 x faster than Scipy|
 
