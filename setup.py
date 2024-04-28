@@ -1,5 +1,8 @@
 from setuptools import setup
 
+with open("README.md", "r") as f:
+    long_description = f.read()
+
 setup(
     name="fastnorm",
     version="24.04",
@@ -10,4 +13,6 @@ setup(
     keywords="statistics",
     packages=["fastnorm"],
     install_requires=["numpy", "scipy", "statsmodels"],
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 )
