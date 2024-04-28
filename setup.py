@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="fastnorm",
-    version="24.04.1",
+    version="24.04.2",
     description="Fast evaluation of multivariate normal distribution",
     url="https://github.com/mvds314/fastnorm",
     author="Martin van der Schans",

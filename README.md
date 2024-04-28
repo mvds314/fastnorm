@@ -42,7 +42,13 @@ fn.bivar_norm_cdf(x, correl)
 
 ## Installation
 
-You can install this library directly from github:
+To install from PyPI:
+
+```bash
+pip install fastnorm
+```
+
+To install the latest development version from github:
 
 ```bash
 pip install git+https://github.com/mvds314/fastnorm.git
