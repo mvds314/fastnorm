@@ -15,15 +15,13 @@ With scalar input, the speed is comparable to the Scipy implementation.
 The Scipy implemantation, however, is slow for vector valued input. This packages containes a vectorized implementation which is signficantly faster albeit still slower than a native C implementation such as the one in the [approxcdf](https://github.com/david-cortes/approxcdf) package.
 The advantage of this package is that it is pure Python and does not require any (build) dependencies.
 
-Rough findings for speed improvements compared to the Scipy implementation (values indicates times faster than scipy).
+Rough findings for speed improvements compared to the Scipy implementation.
 | Module | Correlation | Speed improvement single | Speed improvement vectorized
 | --- | --- | --- | --- |
-| Scipy | abs < 0.925 | 1 | 1 |
-| fastnorm | abs < 0.925 | >1000 | 10 |
-| approxcdf | abs < 0.925 | >1000 | 10 |
-| Scipy | abs > 0.925 | 1 | 1 |
-| fastnorm | abs > 0.925 | >1000| 3 |
-| approxcdf | abs > 0.925 | >1000| 10 |
+| fastnorm | abs < 0.925 | >1000 x faster than Scipy | 10 x faster than Scipy|
+| approxcdf | abs < 0.925 | >1000 x faster than Scipy| 10 |
+| fastnorm | abs > 0.925 | >1000 x faster than Scipy| 3 x faster than Scipy|
+| approxcdf | abs > 0.925 | >1000 x faster than Scipy| 10 x faster than Scipy|
 
 These finds are based on an average of 100 runs and can be reproduced by running the `example.py` script.
 
