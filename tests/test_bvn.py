@@ -7,7 +7,6 @@ import numpy as np
 import scipy.stats as sps
 
 from fastnorm import bivar_norm_pdf, bivar_norm_cdf
-from fastnorm.bvnorm import bvnu
 
 
 @pytest.mark.parametrize(
