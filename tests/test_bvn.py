@@ -59,6 +59,8 @@ if __name__ == "__main__":
                 # "-k",
                 # "test_bivar_norm_cdf",
                 "--tb=auto",
-                "--pdb",
+                # "--pdb",
+                "-s",  # Disable output capturing
+                # "-m tofix",
             ]
         )
